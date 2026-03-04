@@ -1,0 +1,10 @@
+/target
+/Cargo.lock
+/.cargo
+
+/.direnv
+
+# Editor directories
+/.vscode
+/.zed
+/.idea

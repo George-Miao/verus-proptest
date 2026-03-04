@@ -1,0 +1,25 @@
+[package]
+name = "verus_proptest"
+version = "0.1.0"
+edition = "2024"
+
+[package.metadata.verus]
+verify = true
+
+[dependencies]
+verus_proptest_macro = { path = "../verus_proptest_macro" }
+databake = "0.2.0"
+
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+syn = { workspace = true }
+proptest = "1.10.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+rand = "0.10.0"
+tempfile = "3.26.0"
+
+[dev-dependencies]
+vstd = { workspace = true }
+builtin = { workspace = true }
+builtin_macros = { workspace = true }

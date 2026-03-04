@@ -1,0 +1,39 @@
+#:schema https://dystroy.org/bacon/.bacon.schema.json
+
+# This is a configuration file for the bacon tool
+#
+# Complete help on configuration: https://dystroy.org/bacon/config/
+#
+# You may check the current default at
+#   https://github.com/Canop/bacon/blob/main/defaults/default-bacon.toml
+
+default_job = "verify"
+env.CARGO_TERM_COLOR = "always"
+
+[jobs.verify]
+command = ["verus", "verus_proptest/tests/human_eval_050.rs"]
+need_stdout = false
+
+[jobs.verify-compile]
+command = ["verus", "src/main.rs", "--compile"]
+need_stdout = false
+
+[jobs.expand]
+command = ["cargo", "expand", "-p", "verus_proptest", "--test", "human_eval_050"]
+allow_warnings = true
+need_stdout = true
+
+[jobs.check-expand]
+command = ["cargo", "check", "-p", "verus_proptest", "--test", "human_eval_050"]
+
+[jobs.test-expand]
+command = ["cargo", "test", "-p", "verus_proptest", "--test", "human_eval_050", "--", "--nocapture"]
+need_stdout = true
+allow_warnings = true
+
+[keybindings]
+v = "job:verify"
+f = "job:verusfmt"
+e = "job:expand"
+ctrl-e = "job:check-expand"
+ctrl-t = "job:test-expand"

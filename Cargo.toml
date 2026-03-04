@@ -1,0 +1,15 @@
+[workspace]
+resolver = "3"
+members = [
+  "verus_proptest_macro",
+  "verus_proptest"
+]
+
+[workspace.dependencies]
+syn = { package = "verus_syn", git = "https://github.com/verus-lang/verus" }
+vstd = { git = "https://github.com/verus-lang/verus" }
+builtin = { package = "verus_builtin", git = "https://github.com/verus-lang/verus" }
+builtin_macros = { package = "verus_builtin_macros", git = "https://github.com/verus-lang/verus" }
+
+quote = "1.0.45"
+proc-macro2 = "1.0.106"
