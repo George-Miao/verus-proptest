@@ -1,6 +1,9 @@
 use databake::{Bake, CrateEnv, TokenStream};
 use quote::{ToTokens, format_ident, quote};
-use syn::{Block, Ident, Index, Pat, parse::Parser};
+use syn::{
+    Block, Ident, Index, Pat,
+    parse::{Parse, Parser},
+};
 
 #[cfg(target_pointer_width = "16")]
 const SIZE_OF_USIZE: usize = 2;
@@ -88,14 +91,23 @@ impl<'a, T: Testable> EnsuresCodegen<'a, T> {
         let ret_pat = Pat::parse_single
             .parse_str(T::RET.unwrap_or("_"))
             .expect("failed to parse pattern");
-        let baked = ensures.bake(&self.reqs.ctx);
+        let baked = self.ret.bake(&self.reqs.ctx);
         let ensures = Block::parse_within
             .parse_str(ensures)
             .expect("failed to parse body");
 
+        let ret_binding = if let Some(ret_type) = T::RET_TYPE {
+            let ret_type_tokens = syn::Type::parse
+                .parse_str(ret_type)
+                .expect("failed to parse return type");
+            quote! { let #ret_pat: #ret_type_tokens = #baked; }
+        } else {
+            quote! { let #ret_pat = #baked; }
+        };
+
         Some(wraps(quote! {
             #arg_bind
-            let #ret_pat = #baked;
+            #ret_binding
 
             #( #ensures )*
         }))

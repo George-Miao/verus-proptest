@@ -11,6 +11,8 @@ use syn::{
     visit_mut::{VisitMut, visit_file_mut},
 };
 
+mod strategy;
+
 #[proc_macro_attribute]
 pub fn generate(_: proc_macro::TokenStream, _: proc_macro::TokenStream) -> proc_macro::TokenStream {
     Error::new(
@@ -129,6 +131,7 @@ impl<'a> FuncGenerator<'a> {
         let args_ty = self.generate_args_type();
         let ret = self.generate_ret();
         let ret_ty = self.generate_ret_type();
+        let ret_type_const = self.generate_ret_type_const();
         let requires = self.generate_requires();
         let ensures = self.generate_ensures();
         let run = self.generate_run();
@@ -145,6 +148,7 @@ impl<'a> FuncGenerator<'a> {
 
                 #args
                 #ret
+                #ret_type_const
                 #requires
                 #ensures
 
@@ -181,10 +185,6 @@ impl<'a> FuncGenerator<'a> {
                 #fn_ident ( #( #refs args . #idx ),* )
             }
         }
-    }
-
-    fn generate_strategy(&self) -> Option<TokenStream> {
-        None
     }
 
     fn generate_args(&self) -> TokenStream {
@@ -232,6 +232,16 @@ impl<'a> FuncGenerator<'a> {
         match &self.func.sig.output {
             syn::ReturnType::Default => quote! { type Ret = (); },
             syn::ReturnType::Type(_, _, _, ty) => quote! { type Ret = #ty; },
+        }
+    }
+
+    fn generate_ret_type_const(&self) -> Option<TokenStream> {
+        match &self.func.sig.output {
+            syn::ReturnType::Default => None,
+            syn::ReturnType::Type(_, _, _, ty) => {
+                let ty_str = ty.to_token_stream().to_string();
+                Some(quote! { const RET_TYPE: Option<&str> = Some( #ty_str ); })
+            }
         }
     }
 

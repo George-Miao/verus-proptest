@@ -59,6 +59,7 @@ pub trait Testable {
 
     const ARGS: Args;
     const RET: Option<&str> = None;
+    const RET_TYPE: Option<&str> = None;
     const REQUIRES: Option<&str> = None;
     const ENSURES: Option<&str> = None;
 
